@@ -1,17 +1,23 @@
 #!/bin/bash
 
+# This will get how many Arguments the user has added
+# Example below which has 5 Arguments
+# root@karltek [ ~ ]$ maclookup.sh 0000.0c  08:00:20  01-00-0C-CC-CC-CC  00d9.d110.21f9  01-23-45-67-89-AB-CD-EF 
 
 inputCount="$#"
 
-# Print Help
+
+
+# This is just a brief info that customer will see when they use the script
 echo -e "\n   ###############################################################################################"
-echo -e "   ## This script will help you identify MAC address Vendor via OUI                             ##"
-echo -e "   ## An OUI or Organizationally Unique Identifier is the first 6 characters of a MAC address   ##"
-echo -e "   ###############################################################################################"
+echo -e   "   ## This script will help you identify MAC address Vendor via OUI                             ##"
+echo -e   "   ## An OUI or Organizationally Unique Identifier is the first 6 characters of a MAC address   ##"
+echo -e   "   ###############################################################################################"
 
 
 
-# Get MAC address from user input
+# This function will get the MAC address if the user chooses to run the script without an Argument
+# It will also check if the user input is atleast 6 characters ( OUI lenght )
 function getMAC() {
         echo -e "\n"
         read -rp "Enter MAC address: " mac_addr
@@ -38,7 +44,7 @@ function getNewMAC() {
 
 
 
-# Get MAC address Vendor Name via IEEE
+# Get MAC address Vendor Name via IEEE Standards
 function getVendor() {
         OUI=$(echo "$mac_addr"| tr -dc '[:alnum:]\n\r'| head -c 6 )
         vendorOUI=$(curl -sS "http://standards-oui.ieee.org/oui.txt" | grep -i "$OUI" --color )
@@ -88,23 +94,21 @@ if [ -z "$vendorOUI" ]
 
 if [ "$inputCount" -gt 0 ]
 	then
-	echo -e "\n"
-	for arg
-	do
-		OUI=$(echo "$arg"| tr -dc '[:alnum:]\n\r'| head -c 6 )
-		vendorOUI=$(curl -sS "http://standards-oui.ieee.org/oui.txt" | grep -i "$OUI" | cut -d')' -f2 | tr -d '\t')
-			if [ -z "$vendorOUI" ]
-				then
-				echo -e "$arg is not a valid MAC Address or not Identified"
-				else
-				echo -e "$arg is $vendorOUI"
-			fi
-	done
+	        echo -e "\n"
+	        for arg
+	        do
+		        OUI=$(echo "$arg"| tr -dc '[:alnum:]\n\r'| head -c 6 )
+		        vendorOUI=$(curl -sS "http://standards-oui.ieee.org/oui.txt" | grep -i "$OUI" | cut -d')' -f2 | tr -d '\t')
+		        	if [ -z "$vendorOUI" ]
+			        	then
+			        	echo -e "$arg is not a valid MAC Address or not Identified"
+			        	else
+			        	echo -e "$arg is $vendorOUI"
+			        fi
+	        done
 
 	else
        		 getMAC
 
 	fi
 		exit
-
-
